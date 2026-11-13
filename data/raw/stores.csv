@@ -1,0 +1,7 @@
+store_id,store_name,zone,pincode,status
+ST001,Synthetic Store 001,Zone_A,900001,Active
+ST002,Synthetic Store 002,Zone_A,900002,Active
+ST003,Synthetic Store 003,Zone_B,900003,Active
+ST004,Synthetic Store 004,Zone_B,900004,Active
+ST005,Synthetic Store 005,Zone_C,900005,Active
+ST006,Synthetic Store 006,Zone_C,900006,Active

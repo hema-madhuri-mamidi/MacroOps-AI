@@ -1,0 +1,266 @@
+MacroOps AI - Synthetic Data Validation Report
+============================================================
+Seed: 42 | Snapshot: 2026-10-14T19:30:00+05:30 | Time zone: Asia/Kolkata (IST, UTC+05:30)
+
+ROWS GENERATED PER DATASET
+  stores.csv                    6 rows    5 columns
+  orders.csv                 1200 rows   18 columns
+  order_items.csv            3657 rows    6 columns
+  inventory.csv               240 rows    7 columns
+  picking.csv                1164 rows    7 columns
+  packing.csv                1161 rows    4 columns
+  delivery_rider.csv         1159 rows    8 columns
+  rider_availability.csv     1404 rows    5 columns
+  exceptions.csv              362 rows   14 columns
+  sop_knowledge.csv            36 rows    9 columns
+  scenario_labels.csv        1225 rows    6 columns
+
+CHECKS
+  [PASS] [Schema] stores: exact field names and order
+  [PASS] [Schema] orders: exact field names and order
+  [PASS] [Schema] order_items: exact field names and order
+  [PASS] [Schema] inventory: exact field names and order
+  [PASS] [Schema] picking: exact field names and order
+  [PASS] [Schema] packing: exact field names and order
+  [PASS] [Schema] delivery_rider: exact field names and order
+  [PASS] [Schema] rider_availability: exact field names and order
+  [PASS] [Schema] exceptions: exact field names and order
+  [PASS] [Schema] sop_knowledge: exact field names and order
+  [PASS] [Schema] scenario_labels: exact field names and order
+  [PASS] [Keys] stores: primary key ['store_id'] unique
+  [PASS] [Keys] orders: primary key ['order_id'] unique
+  [PASS] [Keys] order_items: primary key ['order_id', 'sku_id'] unique
+  [PASS] [Keys] inventory: primary key ['store_id', 'sku_id'] unique
+  [PASS] [Keys] picking: primary key ['order_id'] unique
+  [PASS] [Keys] packing: primary key ['order_id'] unique
+  [PASS] [Keys] delivery_rider: primary key ['order_id'] unique
+  [PASS] [Keys] rider_availability: primary key ['store_id', 'snapshot_time'] unique
+  [PASS] [Keys] exceptions: primary key ['exception_id'] unique
+  [PASS] [Keys] sop_knowledge: primary key ['document_id', 'section'] unique
+  [PASS] [Keys] scenario_labels: primary key ['label_id'] unique
+  [PASS] [Enums] stores.status: only allowed values
+  [PASS] [Enums] orders.current_stage: only allowed values
+  [PASS] [Enums] orders.order_status: only allowed values
+  [PASS] [Enums] orders.sla_status: only allowed values
+  [PASS] [Enums] delivery_rider.delivery_status: only allowed values
+  [PASS] [Enums] delivery_rider.rider_availability: only allowed values
+  [PASS] [Enums] exceptions.category: only allowed values
+  [PASS] [Enums] exceptions.status: only allowed values
+  [PASS] [Enums] exceptions.approval_decision: only allowed values
+  [PASS] [Enums] sop_knowledge.approval_status: only allowed values
+  [PASS] [Enums] sop_knowledge.exception_category: only allowed values
+  [PASS] [Enums] sop_knowledge.content_origin: only allowed values
+  [PASS] [Enums] scenario_labels.scenario_type: only allowed values
+  [PASS] [FK] orders.store_id -> stores
+  [PASS] [FK] order_items.store_id -> stores
+  [PASS] [FK] inventory.store_id -> stores
+  [PASS] [FK] rider_availability.store_id -> stores
+  [PASS] [FK] exceptions.store_id -> stores
+  [PASS] [FK] scenario_labels.store_id -> stores
+  [PASS] [FK] order_items.order_id -> orders (no orphan stage/item records)
+  [PASS] [FK] picking.order_id -> orders (no orphan stage/item records)
+  [PASS] [FK] packing.order_id -> orders (no orphan stage/item records)
+  [PASS] [FK] delivery_rider.order_id -> orders (no orphan stage/item records)
+  [PASS] [FK] exceptions.order_id -> orders (when present)
+  [PASS] [FK] scenario_labels.order_id -> orders (when present)
+  [PASS] [FK] order_items (store_id, sku_id) -> inventory
+  [PASS] [FK] exceptions (store_id, sku_id) -> inventory
+  [PASS] [FK] scenario_labels (store_id, sku_id) -> inventory
+  [PASS] [FK] order_items belong to their order's store
+  [PASS] [FK] exception store_id equals its order's store_id
+  [PASS] [FK] picker_associate_id in synthetic associate pool
+  [PASS] [FK] rider_id in synthetic rider pool
+  [PASS] [FK] assigned_to in associate/manager pools
+  [PASS] [FK] approver in manager pool
+  [PASS] [FK] rider store matches order store
+  [PASS] [FK] every exception category in use has an Approved SOP section
+  [PASS] [SOP] at least 3 sections per exception category
+  [PASS] [SOP] at least one Draft and one Retired section exist
+  [PASS] [SOP] content_origin = Synthetic on every row
+  [PASS] [Stage] cancelled orders have no picking/packing/delivery records
+  [PASS] [Stage] picking record <=> pick_start populated in Orders
+  [PASS] [Stage] packing only after picking completed (pick_end populated)
+  [PASS] [Stage] delivery only after packing completed; one per packed order
+  [PASS] [Timestamps] pick_start: Orders value equals stage-table value exactly
+  [PASS] [Timestamps] pick_end: Orders value equals stage-table value exactly
+  [PASS] [Timestamps] pack_start: Orders value equals stage-table value exactly
+  [PASS] [Timestamps] pack_end: Orders value equals stage-table value exactly
+  [PASS] [Timestamps] assignment_time: Orders value equals stage-table value exactly
+  [PASS] [Timestamps] pickup_time: Orders value equals stage-table value exactly
+  [PASS] [Timestamps] delivery_time: Orders value equals stage-table value exactly
+  [PASS] [Timestamps] lifecycle order: order <= pick <= pack <= assignment <= pickup <= delivery
+  [PASS] [Timestamps] no later stage timestamp without the earlier ones
+  [PASS] [Timestamps] picking/packing durations are non-negative
+  [PASS] [Timestamps] no lifecycle event lies after the snapshot time
+  [PASS] [Timestamps] exception timestamps not after snapshot
+  [PASS] [Timestamps] exceptions detected after their order was placed
+  [PASS] [SLA] promised_delivery_time = order_time + configured window
+  [PASS] [SLA] sla_status equals Data Dictionary Section 4 derivation
+  [PASS] [Quantity] item_count = number of distinct order lines
+  [PASS] [Quantity] total_quantity = sum(quantity_ordered)
+  [PASS] [Quantity] quantity_ordered >= 1
+  [PASS] [Quantity] quantity_picked <= quantity_ordered
+  [PASS] [Quantity] Picking.items_ordered = Orders.total_quantity
+  [PASS] [Quantity] Picking.items_picked = sum(quantity_picked)
+  [PASS] [Quantity] items_picked <= items_ordered
+  [PASS] [Nulls] quantity_picked null until pick_end populated (and only then)
+  [PASS] [Nulls] items_picked / mis_pick_flag null until pick_end populated
+  [PASS] [Nulls] packing_issue_flag null until pack_end populated
+  [PASS] [Status] current_stage / order_status combinations follow Data Dictionary 3.2
+  [PASS] [Status] delivery_status maps to the Orders stage (Data Dictionary 3.7)
+  [PASS] [Status] Delivery Failed <=> delivery_status Failed
+  [PASS] [Status] Delivered <=> delivery_time populated <=> delivery_status Delivered
+  [PASS] [Status] cancelled orders: SLA Not Applicable, no stage timestamps
+  [PASS] [Delivery] rider_id, assignment_time, rider_availability null iff Awaiting Assignment
+  [PASS] [Delivery] failed attempt => pickup_time populated and status Failed or Delivered (single retry)
+  [PASS] [Delivery] status Failed => failed_attempt_flag true, delivery_time null
+  [PASS] [Delivery] rider_availability uses only Available/Busy (no 'Unavailable')
+  [PASS] [Rider] overlapping assignments for the same rider (batching, labelled Busy)  (21 overlaps)
+  [PASS] [Rider availability] counts >= 0
+  [PASS] [Rider availability] counts sum to the rider pool size per store/hour
+  [PASS] [Rider availability] hourly snapshots (top of the hour, IST), none after snapshot time
+  [PASS] [Rider availability] every Rider Assignment Delay exception sits in an hour with riders_available = 0  (46 exceptions checked)
+  [PASS] [Inventory] stock values >= 0
+  [PASS] [Inventory] last_updated not after snapshot
+  [PASS] [Inventory] 240 store/SKU rows = stores x SKUs
+  [PASS] [Inventory] Inventory Mismatch exceptions point at rows with system_stock != counted_shelf_stock  (14 exceptions checked)
+  [PASS] [Inventory] Inventory Mismatch exceptions carry store_id + sku_id
+  [PASS] [Inventory] Stockout exceptions: line short-picked and counted_shelf_stock < quantity_ordered  (23 exceptions checked)
+  [PASS] [Inventory] every stock-driven short-pick has a Stockout exception
+  [PASS] [Inventory] SKU demand is skewed (top SKU >= 2x median SKU)  (top=430 median=58.0)
+  [PASS] [Exceptions] order-level categories carry order_id; unique exception_id
+  [PASS] [Exceptions] resolved_at >= detected_at
+  [PASS] [Exceptions] approved_at >= detected_at and resolved_at >= approved_at (when both exist)
+  [PASS] [Exceptions] Resolved/Closed <=> resolved_at and resolution populated
+  [PASS] [Exceptions] Pending Approval: approval_applicable true; no approver/decision/approved_at; not resolved
+  [PASS] [Exceptions] approval fields only where approval_applicable = true
+  [PASS] [Exceptions] approval-applicable Resolved/Closed exceptions carry approver, decision and approved_at
+  [PASS] [Exceptions] approver, decision, approved_at are populated together
+  [PASS] [Exceptions] 'Action Required' is not used
+  [PASS] [Exceptions] Picking Delay exceptions agree with picking timestamps (> threshold)  (47 vs 47)
+  [PASS] [Exceptions] Packing Delay exceptions agree with packing timestamps (> threshold)  (39 vs 39)
+  [PASS] [Exceptions] Rider Assignment Delay exceptions agree with assignment timestamps (> threshold)  (46 vs 46)
+  [PASS] [Exceptions] every order past its promised time without on-time delivery has a Delivery Delay exception  (120 orders)
+  [PASS] [Exceptions] Failed Delivery Attempt exceptions <=> failed_attempt_flag
+  [PASS] [Exceptions] SLA Risk/Breach exceptions only on At Risk or Breached orders
+  [PASS] [Coverage] scenario present: Normal flow  (979 labels)
+  [PASS] [Coverage] scenario present: Picking delay  (32 labels)
+  [PASS] [Coverage] scenario present: Packing delay  (23 labels)
+  [PASS] [Coverage] scenario present: Inventory mismatch  (24 labels)
+  [PASS] [Coverage] scenario present: Stockout  (23 labels)
+  [PASS] [Coverage] scenario present: Rider shortage  (31 labels)
+  [PASS] [Coverage] scenario present: Delivery delay  (29 labels)
+  [PASS] [Coverage] scenario present: Failed delivery  (24 labels)
+  [PASS] [Coverage] scenario present: Multi-stage disruption  (14 labels)
+  [PASS] [Coverage] scenario present: Live At Risk / Breached  (10 labels)
+  [PASS] [Coverage] scenario present: Cancelled  (36 labels)
+  [PASS] [Coverage] live At Risk orders exist
+  [PASS] [Coverage] live Breached orders exist
+  [PASS] [Coverage] all four SLA states exist
+  [PASS] [Coverage] all four exception statuses exist
+  [PASS] [Coverage] all exception categories exist
+  [PASS] [Coverage] approval-applicable exceptions exist with all three decisions
+  [PASS] [Coverage] failed delivery with and without a successful retry
+  [PASS] [Coverage] rider shortage hours exist (riders_available = 0)
+  [PASS] [Coverage] multi-stage chain exists: picking, packing and rider exceptions on one order
+  [PASS] [Semantic:Normal flow] order is delivered (order_status Delivered, stage Delivered)  (979 labels checked)
+  [PASS] [Semantic:Normal flow] delivery_time is populated and all stage timestamps exist
+  [PASS] [Semantic:Normal flow] delivery_time <= promised_delivery_time
+  [PASS] [Semantic:Normal flow] no exception exists for the order
+  [PASS] [Semantic:Normal flow] no failed attempt on the order
+  [PASS] [Semantic:Normal flow] root_cause_stage = None
+  [PASS] [Semantic:Normal flow] bidirectional: every order whose facts satisfy this signature carries the label (and no other order does)  (979 labels checked; 0 unlabelled, 0 unsupported)
+  [PASS] [Semantic:Picking delay] pick_start and pick_end exist  (32 labels checked)
+  [PASS] [Semantic:Picking delay] picking duration > configured picking delay threshold
+  [PASS] [Semantic:Picking delay] lifecycle consistent: not Cancelled/Placed/Picking (picking is complete)
+  [PASS] [Semantic:Picking delay] later stages that exist are normal (no packing delay, no rider-assignment wait above threshold)
+  [PASS] [Semantic:Picking delay] root_cause_stage = Picking
+  [PASS] [Semantic:Picking delay] bidirectional: every order whose facts satisfy this signature carries the label (and no other order does)  (32 labels checked; 0 unlabelled, 0 unsupported)
+  [PASS] [Semantic:Packing delay] picking completed (pick_end exists)  (23 labels checked)
+  [PASS] [Semantic:Packing delay] pack_start and pack_end exist
+  [PASS] [Semantic:Packing delay] packing duration > configured packing delay threshold
+  [PASS] [Semantic:Packing delay] picking was normal (duration <= threshold)
+  [PASS] [Semantic:Packing delay] root_cause_stage = Packing
+  [PASS] [Semantic:Packing delay] bidirectional: every order whose facts satisfy this signature carries the label (and no other order does)  (23 labels checked; 0 unlabelled, 0 unsupported)
+  [PASS] [Semantic:Inventory mismatch] label points to an existing store/SKU row  (24 labels checked)
+  [PASS] [Semantic:Inventory mismatch] system_stock != counted_shelf_stock
+  [PASS] [Semantic:Inventory mismatch] store-level label: store_id + sku_id present, order_id empty
+  [PASS] [Semantic:Inventory mismatch] root_cause_stage = Inventory
+  [PASS] [Semantic:Inventory mismatch] bidirectional: every inventory row with system_stock != counted_shelf_stock is labelled (and no other)  (24 rows vs 24 labels)
+  [PASS] [Semantic:Stockout] label has order_id + sku_id and matches an order line  (23 labels checked)
+  [PASS] [Semantic:Stockout] order line is short-picked (quantity_picked < quantity_ordered)
+  [PASS] [Semantic:Stockout] counted_shelf_stock < quantity_ordered
+  [PASS] [Semantic:Stockout] root_cause_stage = Inventory
+  [PASS] [Semantic:Stockout] bidirectional: every stock-driven short-picked line is labelled (and no other)  (23 lines vs 23 labels)
+  [PASS] [Semantic:Rider shortage] pack_end and assignment_time exist  (31 labels checked)
+  [PASS] [Semantic:Rider shortage] meaningful assignment wait (> configured threshold)
+  [PASS] [Semantic:Rider shortage] riders_available = 0 in an hourly snapshot covering the pack_end -> assignment window
+  [PASS] [Semantic:Rider shortage] no earlier stage abnormal (root cause is rider supply)
+  [PASS] [Semantic:Rider shortage] root_cause_stage = Rider Assignment
+  [PASS] [Semantic:Rider shortage] bidirectional: every order whose facts satisfy this signature carries the label (and no other order does)  (31 labels checked; 0 unlabelled, 0 unsupported)
+  [PASS] [Semantic:Delivery delay] rider assignment exists  (29 labels checked)
+  [PASS] [Semantic:Delivery delay] delivery_time populated (completed delivery, not an undelivered breach)
+  [PASS] [Semantic:Delivery delay] delivery_time > promised_delivery_time
+  [PASS] [Semantic:Delivery delay] no earlier stage abnormal and no failed attempt (root cause is delivery)
+  [PASS] [Semantic:Delivery delay] root_cause_stage = Delivery
+  [PASS] [Semantic:Delivery delay] bidirectional: every order whose facts satisfy this signature carries the label (and no other order does)  (29 labels checked; 0 unlabelled, 0 unsupported)
+  [PASS] [Semantic:Failed delivery] failed_attempt_flag = True and pickup_time populated  (24 labels checked)
+  [PASS] [Semantic:Failed delivery] retry-success form: delivery_status Delivered, delivery_time populated, order Delivered  (13 orders)
+  [PASS] [Semantic:Failed delivery] no-success form: delivery_status Failed, delivery_time null, order_status Delivery Failed  (11 orders)
+  [PASS] [Semantic:Failed delivery] every label is one of the two defined representations
+  [PASS] [Semantic:Failed delivery] both representations are present
+  [PASS] [Semantic:Failed delivery] root_cause_stage = Delivery
+  [PASS] [Semantic:Failed delivery] bidirectional: every order whose facts satisfy this signature carries the label (and no other order does)  (24 labels checked; 0 unlabelled, 0 unsupported)
+  [PASS] [Semantic:Multi-stage disruption] picking-origin delay: pick_end exists and picking duration > threshold  (14 labels checked)
+  [PASS] [Semantic:Multi-stage disruption] root_cause_stage = Picking
+  [PASS] [Semantic:Multi-stage disruption] propagates into packing (packing duration > threshold)
+  [PASS] [Semantic:Multi-stage disruption] propagates into rider assignment (wait > threshold)
+  [PASS] [Semantic:Multi-stage disruption] propagates into delivery (delivery_time populated and > promised)
+  [PASS] [Semantic:Multi-stage disruption] no snapshot truncation: all stage timestamps exist and order is Delivered
+  [PASS] [Semantic:Multi-stage disruption] bidirectional: every order whose facts satisfy this signature carries the label (and no other order does)  (14 labels checked; 0 unlabelled, 0 unsupported)
+  [PASS] [Semantic:Live At Risk / Breached] order still in progress at snapshot_time (order_status In Progress/Placed)  (10 labels checked)
+  [PASS] [Semantic:Live At Risk / Breached] not delivered, not cancelled, not failed (delivery_time null)
+  [PASS] [Semantic:Live At Risk / Breached] sla_status is At Risk or Breached
+  [PASS] [Semantic:Live At Risk / Breached] near or past promise at snapshot (<= at-risk buffer remaining)
+  [PASS] [Semantic:Live At Risk / Breached] label carries order_id only (no sku, no root cause)
+  [PASS] [Semantic:Live At Risk / Breached] bidirectional: every In Progress/Placed At Risk or Breached order is labelled (and no other)  (10 orders vs 10 labels)
+  [PASS] [Semantic:Cancelled] order_status = Cancelled and current_stage = Cancelled  (36 labels checked)
+  [PASS] [Semantic:Cancelled] cancelled before picking: no stage timestamps, nothing picked
+  [PASS] [Semantic:Cancelled] no Picking/Packing/Delivery records
+  [PASS] [Semantic:Cancelled] sla_status Not Applicable
+  [PASS] [Semantic:Cancelled] bidirectional: every order whose facts satisfy this signature carries the label (and no other order does)  (36 labels checked; 0 unlabelled, 0 unsupported)
+  [PASS] [Semantic:Labels] at most one primary (root-cause) label per order
+  [PASS] [Semantic:Labels] at most one Live At Risk / Breached overlay per order
+  [PASS] [Semantic:Labels] order-level scenarios carry order_id; Inventory mismatch carries none
+  [PASS] [Semantic:Labels] root_cause_stage follows the scenario-to-stage mapping for every label
+  [PASS] [Semantic:Labels] every Delivered or Cancelled order carries a primary label  (9 orders without primary label (in-flight or partly propagated; see README section 10))
+  [PASS] [Semantic:Labels] primary label equals the facts-derived expected label for every order  (1200 orders checked)
+  [PASS] [Volume] orders
+  [PASS] [Volume] order_items within 2,000-4,000
+  [PASS] [Volume] orders with an exception about EXCEPTION_RATE (+/- 5 pts)  (15.0%)
+  [PASS] [Volume] cancellation rate about configured value  (3.0%)
+  [PASS] [Volume] SOP rows = documents x sections
+
+SCENARIO SEMANTIC VALIDATION SUMMARY (Data Dictionary V1.1 Section 7)
+  Scenario                   Labels  Checks  Result
+  Normal flow                   979       7  PASS
+  Picking delay                  32       6  PASS
+  Packing delay                  23       6  PASS
+  Inventory mismatch             24       5  PASS
+  Stockout                       23       5  PASS
+  Rider shortage                 31       6  PASS
+  Delivery delay                 29       6  PASS
+  Failed delivery                24       7  PASS
+  Multi-stage disruption         14       7  PASS
+  Live At Risk / Breached        10       6  PASS
+  Cancelled                      36       5  PASS
+  (label-set integrity)        1225       6  PASS
+
+SUMMARY
+  Existing checks:       152
+  New semantic checks:   72
+  Checks run (total):    224
+  Passed:                224
+  Critical failures:     0
+  Warnings:              0
+  Result:                PASS - zero critical integrity errors
